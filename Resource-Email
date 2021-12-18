@@ -1,0 +1,106 @@
+# CallMeR RouterOS Notification
+:local SendFrom "aaa@163.com";      # Need to customize
+:local SendTo "bbb@qq.com";         # Need to customize
+:local Project "RESOURCES REPORT";
+:local WanInterface "pppoe-out1";   # Need to customize
+:local updChannel "stable";
+
+## Check For Upgrade
+:local SystemVer [/system package update get installed-version ];
+:local UpstreamVer;
+:local Status;
+:local Channel;
+
+:if ($UpstreamVer = nothing) do={
+    /system package update set channel=$updChannel
+    /system package update check-for-updates
+    :delay 10s;
+    :set UpstreamVer [/system package update get latest-version ];
+    :set Status [/system package update get status ];
+    :set Channel [/system package update get channel ];
+    }; #Change
+## Check For Upgrade End
+
+## Check CPU Status
+:local CpuCores [/system resource get cpu-count];
+:local CpuLoad [/system resource get cpu-load];
+:local CpuFrequency [/system resource get cpu-frequency];
+## Check CPU Status End
+
+## Check Memory Status
+:local MemoryFree [/system resource get free-memory];
+:local MemoryTotal [/system resource get total-memory];
+## Check Memory Status End
+
+## Check Disk Status
+:local DiskFree [/system resource get free-hdd-space];
+:local DiskTotal [/system resource get total-hdd-space];
+## Check Disk Status End
+
+## Check WAN Status
+:local WanIP [/ip address get [/ip address find interface=$WanInterface] address ];
+:local WanNetwork [/ip address get [/ip address find interface=$WanInterface] network ];
+:local WanLinkDownTime [/interface get $WanInterface last-link-down-time ];
+:local WanLinkUpTime [/interface get $WanInterface last-link-up-time ];
+:local WanLinkDowns [/interface get $WanInterface link-downs ];
+:local WanTx [/interface get $WanInterface tx-byte ];
+:local WanRx [/interface get $WanInterface rx-byte ];
+:local WanTxDrop [/interface get $WanInterface tx-drop ];
+:local WanRxDrop [/interface get $WanInterface rx-drop ];
+:local WanTxError [/interface get $WanInterface tx-error ];
+:local WanRxError [/interface get $WanInterface rx-error ];
+## Check WAN Status End
+
+## Resolve Mail Server
+:local MailIp;
+:set MailIp [:resolve smtp.163.com ];  # Need to customize
+:delay 1s;
+## Resolve End
+
+:local DeviceName [/system identity get name ];
+:local Time [/system clock get time ];
+:local Date [/system clock get date ];
+:local Uptime [/system resource get uptime ];
+
+/tool e-mail send server=$MailIp port=465 tls=yes from=$SendFrom to=$SendTo \
+subject="DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time]" \
+body="
+RouterOS Daily Report - [$Date $Time] \n 
+Router Name: $DeviceName 
+Current version is: $SystemVer 
+Upstream version is: $UpstreamVer ( channel: $Channel ) 
+System Status: $Status 
+
+System Uptime: $Uptime 
+
+== WAN STATUS == 
+Interface: $WanInterface 
+IP Address: $WanIP 
+Networek: $WanNetwork 
+
+Last Link Down Time: $WanLinkDownTime 
+Last Link Up Time: $WanLinkUpTime 
+Link Downs: $WanLinkDowns 
+
+WAN Tx: $[($WanTx / 1048576)] MiB ( as $[($WanTx / 1073741824)] GiB ) 
+WAN Rx: $[($WanRx / 1048576)] MiB ( as $[($WanRx / 1073741824)] GiB ) 
+
+WAN Tx Quality -- Drop: $WanTxDrop  Error: $WanTxError 
+WAN Rx Quality -- Drop: $WanRxDrop  Error: $WanRxError 
+
+== CPU == 
+Core: $CpuCores Cores 
+Load: $CpuLoad % 
+Frequency: $CpuFrequency MHz 
+
+== Memory == 
+Free:  $[($MemoryFree / 1048576)] MiB 
+Total: $[($MemoryTotal / 1048576)] MiB 
+Used:  $[(($MemoryTotal / 1048576) - ($MemoryFree / 1048576))] MiB 
+
+== Disk == 
+Free:  $[($DiskFree / 1048576)] MiB 
+Total: $[($DiskTotal / 1048576)] MiB 
+Used:  $[(($DiskTotal / 1048576) - ($DiskFree / 1048576))] MiB 
+"
+# CallMeR RouterOS Notification End
