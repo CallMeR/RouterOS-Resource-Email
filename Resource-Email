@@ -61,7 +61,7 @@
 
 ## Resolve Mail Server
 :local MailIp;
-:set MailIp [:resolve smtp.163.com ];
+:set MailIp [:resolve smtp.163.com ];  # Need to customize
 :delay 1s;
 ## Resolve End
 
