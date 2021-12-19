@@ -21,20 +21,28 @@
     }; #Change
 ## Check For Upgrade End
 
+## Check Licence Status
+:local Level [/system license get level ];
+:local Renewal [/system license get next-renewal-at ];
+:local Deadline [/system license get deadline-at ];
+## Check Licence Status End
+
 ## Check CPU Status
-:local CpuCores [/system resource get cpu-count];
-:local CpuLoad [/system resource get cpu-load];
-:local CpuFrequency [/system resource get cpu-frequency];
+:local CpuCores [/system resource get cpu-count ];
+:local CpuLoad [/system resource get cpu-load ];
+:local CpuFrequency [/system resource get cpu-frequency ];
 ## Check CPU Status End
 
 ## Check Memory Status
-:local MemoryFree [/system resource get free-memory];
-:local MemoryTotal [/system resource get total-memory];
+:local MemoryFree [/system resource get free-memory ];
+:local MemoryTotal [/system resource get total-memory ];
 ## Check Memory Status End
 
 ## Check Disk Status
-:local DiskFree [/system resource get free-hdd-space];
-:local DiskTotal [/system resource get total-hdd-space];
+:local DiskFree [/system resource get free-hdd-space ];
+:local DiskTotal [/system resource get total-hdd-space ];
+:local DiskWrites [/system resource get write-sect-since-reboot ];
+:local DiskWritesTotal [/system resource get write-sect-total ];
 ## Check Disk Status End
 
 ## Check WAN Status
@@ -53,7 +61,7 @@
 
 ## Resolve Mail Server
 :local MailIp;
-:set MailIp [:resolve smtp.163.com ];  # Need to customize
+:set MailIp [:resolve smtp.163.com ];
 :delay 1s;
 ## Resolve End
 
@@ -67,11 +75,15 @@ subject="DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time]"
 body="
 RouterOS Daily Report - [$Date $Time] \n 
 Router Name: $DeviceName 
+System Uptime: $Uptime 
+
 Current version is: $SystemVer 
 Upstream version is: $UpstreamVer ( channel: $Channel ) 
 System Status: $Status 
 
-System Uptime: $Uptime 
+System Licence Level: $Level
+Next Renewal At: $Renewal
+Deadline At: $Deadline
 
 == WAN STATUS == 
 Interface: $WanInterface 
@@ -99,6 +111,9 @@ Total: $[($MemoryTotal / 1048576)] MiB
 Used:  $[(($MemoryTotal / 1048576) - ($MemoryFree / 1048576))] MiB 
 
 == Disk == 
+Sector Writes Since Reboot: $DiskWrites
+Total Sector Writes: $DiskWritesTotal
+
 Free:  $[($DiskFree / 1048576)] MiB 
 Total: $[($DiskTotal / 1048576)] MiB 
 Used:  $[(($DiskTotal / 1048576) - ($DiskFree / 1048576))] MiB 
