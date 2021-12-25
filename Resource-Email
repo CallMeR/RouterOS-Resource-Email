@@ -61,7 +61,7 @@
 
 ## Resolve Mail Server
 :local MailIp;
-:set MailIp [:resolve smtp.163.com ];  # Need to customize
+:set MailIp [:resolve smtp.163.com ];   # Need to customize
 :delay 1s;
 ## Resolve End
 
@@ -71,10 +71,11 @@
 :local Uptime [/system resource get uptime ];
 
 /tool e-mail send server=$MailIp port=465 tls=yes from=$SendFrom to=$SendTo \
-subject="DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time]" \
+subject="$DeviceName $Project: [Uptime: $Uptime] [$Date $Time]" \
 body="
-RouterOS Daily Report - [$Date $Time] \n 
+== RouterOS Daily Report == \n 
 Router Name: $DeviceName 
+System Date: $Date $Time 
 System Uptime: $Uptime 
 
 Current version is: $SystemVer 
@@ -85,7 +86,7 @@ System Licence Level: $Level
 Next Renewal At: $Renewal
 Deadline At: $Deadline
 
-== WAN STATUS == 
+== WAN STATUS == \n  
 Interface: $WanInterface 
 IP Address: $WanIP 
 Networek: $WanNetwork 
@@ -100,22 +101,22 @@ WAN Rx: $[($WanRx / 1048576)] MiB ( as $[($WanRx / 1073741824)] GiB )
 WAN Tx Quality -- Drop: $WanTxDrop  Error: $WanTxError 
 WAN Rx Quality -- Drop: $WanRxDrop  Error: $WanRxError 
 
-== CPU == 
+== CPU == \n 
 Core: $CpuCores Cores 
 Load: $CpuLoad % 
 Frequency: $CpuFrequency MHz 
 
-== Memory == 
+== Memory == \n 
 Free:  $[($MemoryFree / 1048576)] MiB 
 Total: $[($MemoryTotal / 1048576)] MiB 
 Used:  $[(($MemoryTotal / 1048576) - ($MemoryFree / 1048576))] MiB 
 
-== Disk == 
-Sector Writes Since Reboot: $DiskWrites
-Total Sector Writes: $DiskWritesTotal
-
+== Disk == \n 
 Free:  $[($DiskFree / 1048576)] MiB 
 Total: $[($DiskTotal / 1048576)] MiB 
 Used:  $[(($DiskTotal / 1048576) - ($DiskFree / 1048576))] MiB 
+
+Sector Writes Since Reboot: $DiskWrites 
+Total Sector Writes: $DiskWritesTotal 
 "
 # CallMeR RouterOS Notification End
