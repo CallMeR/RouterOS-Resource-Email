@@ -1,6 +1,6 @@
 # CallMeR RouterOS Notification
 :local Project "RESOURCES REPORT";
-:local WanInterface "pppoe-out1";    # Need to customize
+:local WanInterface "pppoe-out1";            # Need to customize
 :local updChannel "stable";
 
 ## Check For Upgrade
@@ -58,13 +58,13 @@
 ## Check WAN Status End
 
 ## Resolve Mail Server
-:local MailServer "smtp.163.com";    # Need to customize
-:local MailPort "465";               # Need to customize
-:local MailTls "yes";                # Need to customize
-:local SendFrom "aaa@163.com";       # Need to customize
-:local SendTo "bbb@qq.com";          # Need to customize
+:local MailServer "smtp.qq.com";
+:local MailPort "465";
+:local MailTls "yes";
+:local SendFrom "xyz@qq.com";                # Need to customize
+:local SendTo "abc@qq.com";                  # Need to customize
 :local MailIp;
-:set MailIp [:resolve $MailServer ];
+:set MailIp [:resolve $MailServer];
 :delay 1s;
 ## Resolve End
 
